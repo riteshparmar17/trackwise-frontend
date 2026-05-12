@@ -1,0 +1,107 @@
+<div class="card p-4 shadow-sm">
+  <div class="text-center mb-4">
+    <h1 class="h3 fw-bold">🚗 TrackWise</h1>
+    <p class="text-muted">Create your free account</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger text-center">{{ error }}</div>
+  <div *ngIf="message" class="alert alert-success text-center">
+    {{ message }}
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Full Name</label>
+      <input
+        formControlName="name"
+        [ngClass]="{
+          'form-control': true,
+          'is-invalid': name?.invalid && (name?.dirty || name?.touched),
+          'is-valid': name?.valid && (name?.dirty || name?.touched),
+        }"
+        placeholder="Name"
+      />
+      <div
+        *ngIf="name?.invalid && (name?.dirty || name?.touched)"
+        class="invalid-feedback"
+      >
+        <div *ngIf="name?.errors?.['required']">Name is required.</div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Email</label>
+      <input
+        formControlName="email"
+        [ngClass]="{
+          'form-control': true,
+          'is-invalid': email?.invalid && (email?.dirty || email?.touched),
+          'is-valid': email?.valid && (email?.dirty || email?.touched),
+        }"
+        placeholder="Email"
+      />
+      <div
+        *ngIf="email?.invalid && (email?.dirty || email?.touched)"
+        class="invalid-feedback"
+      >
+        <div *ngIf="email?.errors?.['required']">Email is required.</div>
+        <div *ngIf="email?.errors?.['email']">Enter a valid email.</div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Password</label>
+      <input
+        formControlName="password"
+        type="password"
+        [ngClass]="{
+          'form-control': true,
+          'is-invalid':
+            password?.invalid && (password?.dirty || password?.touched),
+          'is-valid': password?.valid && (password?.dirty || password?.touched),
+        }"
+        placeholder="Password"
+      />
+      <div
+        *ngIf="password?.invalid && (password?.dirty || password?.touched)"
+        class="invalid-feedback"
+      >
+        <div *ngIf="password?.errors?.['required']">Password is required.</div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Confirm Password</label>
+      <input
+        formControlName="confirmPassword"
+        type="password"
+        [ngClass]="{
+          'form-control': true,
+          'is-invalid':
+            confirmPassword?.invalid &&
+            (confirmPassword?.dirty || confirmPassword?.touched),
+          'is-valid':
+            confirmPassword?.valid &&
+            (confirmPassword?.dirty || confirmPassword?.touched),
+        }"
+        placeholder="Confirm Password"
+      />
+      <div
+        *ngIf="
+          confirmPassword?.invalid &&
+          (confirmPassword?.dirty || confirmPassword?.touched)
+        "
+        class="invalid-feedback"
+      >
+        <div *ngIf="confirmPassword?.errors?.['required']">
+          Confirm Password is required.
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mb-3">
+      Create Account
+    </button>
+
+    <p class="text-center text-muted small">
+      Already have an account? <a routerLink="/login">Login</a>
+    </p>
+  </form>
+</div>
