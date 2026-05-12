@@ -1,0 +1,63 @@
+<h1 class="h3 fw-bold mb-4">Dashboard</h1>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card bg-primary bg-opacity-10">
+      <div class="fs-2 fw-bold text-primary">{{ totalKm }}</div>
+      <div class="small text-muted">Total KMs</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card bg-success bg-opacity-10">
+      <div class="fs-2 fw-bold text-success">{{ totalDrives }}</div>
+      <div class="small text-muted">Drive Logs</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card bg-warning bg-opacity-10">
+      <div class="fs-2 fw-bold text-warning">{{ incomplete }}</div>
+      <div class="small text-muted">Need End KM</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card bg-danger bg-opacity-10">
+      <div class="fs-2 fw-bold text-danger">\${{ totalSpent }}</div>
+      <div class="small text-muted">Total Spent</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-12 col-sm-6">
+    <a routerLink="/drives/add" class="btn btn-primary w-100 py-3 fs-5">
+      🚗 Add Driving Log
+    </a>
+  </div>
+  <div class="col-12 col-sm-6">
+    <a routerLink="/expenses/add" class="btn btn-success w-100 py-3 fs-5">
+      💰 Add Expense
+    </a>
+  </div>
+</div>
+
+<div *ngIf="recentDrives.length" class="card mb-3">
+  <div class="card-header bg-transparent fw-semibold">Recent Drives</div>
+  <ul class="list-group list-group-flush">
+    <li
+      *ngFor="let d of recentDrives"
+      class="list-group-item d-flex justify-content-between"
+    >
+      <span>{{ d.logDate }} — {{ d.purpose }}</span>
+      <span>
+        <span
+          *ngIf="d.distanceKm; else incompleteBadge"
+          class="badge bg-primary"
+          >{{ d.distanceKm }} km</span
+        >
+        <ng-template #incompleteBadge>
+          <span class="badge bg-warning text-dark">⏳ Incomplete</span>
+        </ng-template>
+      </span>
+    </li>
+  </ul>
+</div>
