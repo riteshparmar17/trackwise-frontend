@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://your-backend-url/api',
+    apiUrl: 'https://trackwise-apis.onrender.com/api',
 };
