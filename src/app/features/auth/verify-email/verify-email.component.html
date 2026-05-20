@@ -1,0 +1,63 @@
+<div class="card p-4 shadow-sm">
+  <div class="text-center mb-4">
+    <h1 class="h3 fw-bold">🚗 TrackWise</h1>
+    <p class="text-muted">Verify Email</p>
+  </div>
+
+  <div *ngIf="view === 'loading'" class="text-center">
+    <p>Verifying your email...</p>
+  </div>
+
+  <div *ngIf="view === 'success'" class="text-center">
+    <div class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
+    <p class="small text-muted">Redirecting to login...</p>
+
+    <a routerLink="/login" class="btn btn-primary mt-2"> Go to Login </a>
+  </div>
+
+  <div *ngIf="view === 'error'" class="text-center">
+    <div class="alert alert-danger">
+      {{ error }}
+    </div>
+
+    <button class="btn btn-primary mt-2" (click)="showResendForm()">
+      Resend Verification Email
+    </button>
+  </div>
+
+  <form *ngIf="view === 'resend'" [formGroup]="form" (ngSubmit)="resend()">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Email</label>
+
+      <input
+        type="email"
+        class="form-control"
+        formControlName="email"
+        [ngClass]="{
+          'is-invalid': email?.invalid && (email?.touched || email?.dirty),
+          'is-valid': email?.valid && (email?.touched || email?.dirty),
+        }"
+        placeholder="Enter your email"
+      />
+
+      <div
+        *ngIf="email?.invalid && (email?.touched || email?.dirty)"
+        class="invalid-feedback"
+      >
+        <div *ngIf="email?.errors?.['required']">Email is required.</div>
+        <div *ngIf="email?.errors?.['email']">Enter a valid email.</div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">
+      Send Verification Email
+    </button>
+
+    <div *ngIf="error" class="alert alert-danger mt-3 text-center">
+      {{ error }}
+    </div>
+  </form>
+</div>
