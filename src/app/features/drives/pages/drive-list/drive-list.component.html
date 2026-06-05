@@ -1,0 +1,198 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h4 fw-bold mb-0">🚗 Drive Logs</h2>
+
+    <a routerLink="/drives/add" class="btn btn-primary"> + Add Log </a>
+  </div>
+
+  <!-- Filter -->
+
+  <div class="card mb-3 p-3">
+    <form
+      [formGroup]="filterForm"
+      (ngSubmit)="loadDrives()"
+      class="row g-2 align-items-end"
+    >
+      <div class="col-md-4">
+        <label class="form-label small mb-1"> From </label>
+
+        <input
+          type="date"
+          formControlName="from"
+          class="form-control form-control-sm"
+        />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label small mb-1"> To </label>
+
+        <input
+          type="date"
+          formControlName="to"
+          class="form-control form-control-sm"
+        />
+      </div>
+
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+          Go
+        </button>
+      </div>
+      <div class="col-md-2">
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm w-100"
+          (click)="resetFilters()"
+        >
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Stats -->
+
+  <div class="card mb-3 p-3 bg-primary bg-opacity-10 stats-bar w-100">
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <div>
+        Total KMs:
+        <strong>{{ totalKM }} km</strong>
+      </div>
+
+      <div>
+        Showing
+        <strong>{{ startEntry }} - {{ endEntry }} of {{ totalEntries }} </strong
+        >entries
+      </div>
+    </div>
+  </div>
+  <!-- Empty State -->
+
+  <div
+    *ngIf="!loading && drives.length === 0"
+    class="text-center text-muted py-5"
+  >
+    No drive logs yet.
+
+    <br />
+
+    <a routerLink="/drives/add"> Add your first one → </a>
+  </div>
+
+  <!-- Table -->
+
+  <div *ngIf="drives.length" class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th (click)="changeSort('date')" style="cursor: pointer">
+            Date
+            <span *ngIf="sortBy === 'date'">
+              {{ sortOrder === "asc" ? "↑" : "↓" }}
+            </span>
+          </th>
+          <th>Start KM</th>
+          <th>End KM</th>
+          <th (click)="changeSort('totalKM')" style="cursor: pointer">
+            Distance
+            <span *ngIf="sortBy === 'totalKM'">
+              {{ sortOrder === "asc" ? "↑" : "↓" }}
+            </span>
+          </th>
+          <th>Purpose</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let d of drives">
+          <td>
+            {{ d.date | date: "mediumDate" }}
+          </td>
+
+          <td>
+            {{ d.startKM }}
+          </td>
+
+          <td>
+            <ng-container *ngIf="d.endKM">
+              {{ d.endKM }}
+            </ng-container>
+
+            <span *ngIf="!d.endKM" class="badge bg-warning text-dark">
+              ⏳ Not set
+            </span>
+          </td>
+
+          <td>
+            <ng-container *ngIf="d.totalKM">
+              <strong> {{ d.totalKM }} km </strong>
+            </ng-container>
+
+            <a
+              *ngIf="!d.totalKM"
+              [routerLink]="['/drives/edit', d._id]"
+              class="btn btn-sm btn-outline-warning"
+            >
+              Add End KM
+            </a>
+          </td>
+
+          <td>
+            {{ d.purpose }}
+          </td>
+
+          <td>
+            <a
+              [routerLink]="['/drives/edit', d._id]"
+              class="btn btn-sm btn-outline-secondary me-2"
+            >
+              Edit
+            </a>
+
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="openDeleteModal(d._id!)"
+            >
+              Del
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div
+    class="d-flex justify-content-center align-items-center gap-3 w-100"
+    *ngIf="totalPages > 0 && hasData"
+  >
+    <button
+      class="btn btn-sm btn-secondary"
+      (click)="loadDrives(page - 1)"
+      [disabled]="page === 1"
+    >
+      Prev
+    </button>
+
+    <span>Page {{ page }} / {{ totalPages }}</span>
+
+    <button
+      class="btn btn-sm btn-secondary"
+      (click)="loadDrives(page + 1)"
+      [disabled]="page >= totalPages || !hasData"
+    >
+      Next
+    </button>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <app-confirm-dialog
+    modalId="deleteDriveModal"
+    title="Delete Drive Log"
+    message="Are you sure you want to delete this drive log?"
+    confirmText="Delete"
+    cancelText="Cancel"
+    confirmButtonClass="btn-danger"
+    (onConfirm)="deleteDrive()"
+  ></app-confirm-dialog>
+</div>

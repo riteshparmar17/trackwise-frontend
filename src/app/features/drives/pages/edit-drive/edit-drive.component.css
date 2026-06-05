@@ -1,0 +1,11 @@
+.drive-card {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+@media (max-width: 576px) {
+
+    .drive-card {
+        margin: 0;
+    }
+}
