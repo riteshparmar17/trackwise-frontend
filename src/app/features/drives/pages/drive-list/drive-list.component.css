@@ -1,0 +1,14 @@
+.table td,
+.table th {
+    white-space: nowrap;
+}
+
+.stats-bar>strong {
+    display: contents;
+}
+
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.85rem;
+    }
+}

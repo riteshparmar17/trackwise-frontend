@@ -1,0 +1,127 @@
+<div class="container py-4">
+  <div class="drive-card card p-4 shadow-sm">
+    <div class="mb-4">
+      <h1 class="h3 fw-bold mb-2">🚗 Add Driving Log</h1>
+
+      <p class="text-muted mb-0">
+        Enter start KM now. You can add end KM later.
+      </p>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label fw-semibold"> Date * </label>
+
+        <input
+          type="date"
+          formControlName="date"
+          [ngClass]="{
+            'form-control': true,
+            'is-invalid': date?.invalid && (date?.dirty || date?.touched),
+            'is-valid': date?.valid && (date?.dirty || date?.touched),
+          }"
+        />
+
+        <div
+          *ngIf="date?.invalid && (date?.dirty || date?.touched)"
+          class="invalid-feedback"
+        >
+          Date is required.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold"> Start KM * </label>
+
+        <div class="input-group">
+          <input
+            type="number"
+            formControlName="startKM"
+            step="0.1"
+            placeholder="e.g. 12450.5"
+            [ngClass]="{
+              'form-control': true,
+              'is-invalid':
+                startKM?.invalid && (startKM?.dirty || startKM?.touched),
+              'is-valid':
+                startKM?.valid && (startKM?.dirty || startKM?.touched),
+            }"
+          />
+
+          <span class="input-group-text"> km </span>
+
+          <div
+            *ngIf="startKM?.invalid && (startKM?.dirty || startKM?.touched)"
+            class="invalid-feedback"
+          >
+            Start KM is required.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label fw-semibold">
+          End KM
+          <span class="badge bg-secondary ms-1"> Optional — add later </span>
+        </label>
+
+        <div class="input-group">
+          <input
+            type="number"
+            step="0.1"
+            formControlName="endKM"
+            placeholder="Leave blank to fill in later"
+            class="form-control"
+          />
+
+          <span class="input-group-text"> km </span>
+        </div>
+      </div>
+
+      <div class="small text-muted mb-3">
+        💡 Find the entry in the list later and click "Add End KM"
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold"> Purpose </label>
+
+        <select class="form-select" formControlName="purpose">
+          <option value="">Select purpose</option>
+
+          <option *ngFor="let item of purposes" [value]="item">
+            {{ item }}
+          </option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold"> Notes </label>
+
+        <textarea
+          rows="3"
+          formControlName="notes"
+          class="form-control"
+          placeholder="Optional: client name, route, etc."
+        ></textarea>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button
+          type="submit"
+          class="btn btn-primary flex-fill"
+          [disabled]="loading"
+        >
+          <span *ngIf="!loading"> Save Drive Log </span>
+
+          <span *ngIf="loading"> Saving... </span>
+        </button>
+
+        <a routerLink="/drives" class="btn btn-outline-secondary"> Cancel </a>
+      </div>
+    </form>
+  </div>
+</div>

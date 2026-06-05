@@ -8,7 +8,10 @@ export const routes: Routes = [
         path: '',
         component: MainLayoutComponent,
         canActivate: [authGuard],
-        children: [{ path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) }]
+        children: [
+            { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+            { path: 'drives', loadChildren: () => import('./features/drives/drives.routes').then(m => m.DRIVES_ROUTES) }
+        ]
     },
     {
         path: '',
