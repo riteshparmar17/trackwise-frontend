@@ -3,6 +3,7 @@ import { AuthService } from '../../../services/auth.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,8 @@ export class LoginComponent {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastService: ToastService
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -44,8 +46,9 @@ export class LoginComponent {
 
     const { email, password } = this.form.value;
     this.auth.login({ email, password }).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.auth.saveToken(res);
+        this.toastService.success(`Welcome back, ${res?.data?.user?.name}`);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
