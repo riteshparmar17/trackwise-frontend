@@ -1,0 +1,14 @@
+.expense-card {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+textarea {
+  resize: vertical;
+}
+
+@media (max-width: 576px) {
+  .expense-card {
+    margin: 0;
+  }
+}
