@@ -4,11 +4,12 @@ import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbCollapseModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
 
 @Component({
   standalone: true,
   selector: 'app-main-layout',
-  imports: [FormsModule, ReactiveFormsModule, CommonModule, RouterModule, NgbCollapseModule, NgbDropdownModule],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule, RouterModule, NgbCollapseModule, NgbDropdownModule, ToastComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css'
 })
@@ -18,10 +19,6 @@ export class MainLayoutComponent {
     firstName: 'Ritesh',
     email: 'ritesh@example.com'
   };
-
-  messages = [
-    { type: 'success', text: 'Welcome back!' },
-  ];
 
   constructor(private router: Router, private authService: AuthService) { }
 
