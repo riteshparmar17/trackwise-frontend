@@ -5,6 +5,7 @@ import { DriveService } from '../../services/drive.service';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ToastService } from '../../../../shared/services/toast.service';
 
 declare const bootstrap: any;
 
@@ -31,7 +32,8 @@ export class DriveListComponent {
   constructor(
     private driveService: DriveService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastService: ToastService
   ) {
     this.filterForm = this.fb.group({
       from: [''],
@@ -69,7 +71,7 @@ export class DriveListComponent {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err?.error?.message || 'Failed to load drives';
+        this.toastService.error(err?.error?.message || 'Failed to load drives');
         this.loading = false;
       }
     });
@@ -86,14 +88,18 @@ export class DriveListComponent {
     this.loadDrives(1);
   }
 
-  changeSort(field: 'date' | 'totalKM'): void {
-    if (this.sortBy === field) {
-      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+  changeSort(column: string): void {
+    if (this.sortBy === column) {
+      this.sortOrder =
+        this.sortOrder === 'asc'
+          ? 'desc'
+          : 'asc';
     } else {
-      this.sortBy = field;
-      this.sortOrder = 'desc';
+      this.sortBy = column;
+      this.sortOrder = 'asc';
     }
-    this.loadDrives(1);
+    this.page = 1;
+    this.loadDrives();
   }
 
   get startEntry(): number {
@@ -112,9 +118,10 @@ export class DriveListComponent {
     this.driveService.deleteDrive(this.selectedDriveId).subscribe({
       next: () => {
         this.loadDrives(this.page);
+        this.toastService.success('Drive log removed successfully.');
       },
-      error: () => {
-        alert('Failed to delete drive');
+      error: (err) => {
+        this.toastService.error(err?.error?.message || 'Failed to delete drive')
       }
     });
   }
@@ -123,6 +130,15 @@ export class DriveListComponent {
     this.selectedDriveId = id;
     const modal = new bootstrap.Modal(document.getElementById('deleteDriveModal')!);
     modal.show();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortBy !== column) {
+      return '↕';
+    }
+    return this.sortOrder === 'asc'
+      ? '▲'
+      : '▼';
   }
 
 }

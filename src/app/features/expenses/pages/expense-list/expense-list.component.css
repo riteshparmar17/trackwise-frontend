@@ -1,0 +1,11 @@
+.table td,
+.table th {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.85rem;
+  }
+}

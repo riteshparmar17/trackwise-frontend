@@ -10,7 +10,8 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
-            { path: 'drives', loadChildren: () => import('./features/drives/drives.routes').then(m => m.DRIVES_ROUTES) }
+            { path: 'drives', loadChildren: () => import('./features/drives/drives.routes').then(m => m.DRIVES_ROUTES) },
+            { path: 'expenses', loadChildren: () => import('./features/expenses/expense.routes').then(m => m.EXPENSES_ROUTES) },
         ]
     },
     {

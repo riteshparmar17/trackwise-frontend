@@ -5,6 +5,7 @@ import { DriveService } from '../../services/drive.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ToastService } from '../../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-edit-drive',
@@ -14,7 +15,6 @@ import { CommonModule } from '@angular/common';
 })
 export class EditDriveComponent {
   loading: boolean = false;
-  error: string = '';
   drive?: Drive;
   purposes = PURPOSE_OPTIONS;
   distancePreview: number = 0;
@@ -24,7 +24,8 @@ export class EditDriveComponent {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private driveService: DriveService
+    private driveService: DriveService,
+    private toastService: ToastService
   ) {
     this.form = this.fb.group({
       endKM: ['', Validators.required],
@@ -36,7 +37,7 @@ export class EditDriveComponent {
   ngOnInit(): void {
     const driveId = this.route.snapshot.paramMap.get('id');
     if (!driveId) {
-      this.error = 'Invalid drive ID';
+      this.toastService.error('Invalid drive ID');
       return;
     }
     this.driveService.getDriveById(driveId).subscribe({
@@ -49,8 +50,8 @@ export class EditDriveComponent {
         });
         this.updateDistancePreview();
       },
-      error: () => {
-        this.error = 'Failed to load drive details';
+      error: (err) => {
+        this.toastService.error(err.error?.message || 'Failed to load drive details');
       }
     });
 
@@ -80,7 +81,7 @@ export class EditDriveComponent {
 
     const endKM = Number(this.form.get('endKM')?.value);
     if (endKM < this.drive.startKM) {
-      this.error = 'End KM cannot be less than Start KM';
+        this.toastService.error('End KM cannot be less than Start KM');
       return;
     }
 
@@ -95,10 +96,11 @@ export class EditDriveComponent {
     this.driveService.updateDrive(this.drive._id!, updateData).subscribe({
       next: () => {
         this.loading = false;
+        this.toastService.success('Drive log updated successfully');
         this.router.navigate(['/drives']);
       },
-      error: () => {
-        this.error = 'Failed to update drive';
+      error: (err) => {
+        this.toastService.error(err.error?.message || 'Failed to update drive log');
         this.loading = false;
       }
     });

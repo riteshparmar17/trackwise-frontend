@@ -1,0 +1,12 @@
+<div class="toast-container">
+
+  <div
+    *ngFor="let msg of toastService.messages$ | async"
+    class="alert shadow"
+    [ngClass]="'alert-' + msg.type">
+
+    {{ msg.text }}
+
+  </div>
+
+</div>
