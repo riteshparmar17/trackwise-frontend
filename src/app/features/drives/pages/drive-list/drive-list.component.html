@@ -85,21 +85,25 @@
     <table class="table table-hover align-middle">
       <thead class="table-light">
         <tr>
-          <th (click)="changeSort('date')" style="cursor: pointer">
-            Date
-            <span *ngIf="sortBy === 'date'">
-              {{ sortOrder === "asc" ? "↑" : "↓" }}
-            </span>
+          <th
+            role="button"
+            (click)="changeSort('date')"
+            style="cursor: pointer"
+          >
+            Date {{ getSortIcon("date") }}
           </th>
-          <th>Start KM</th>
-          <th>End KM</th>
+          <th (click)="changeSort('startKM')" style="cursor: pointer">
+            Start KM {{ getSortIcon("startKM") }}
+          </th>
+          <th (click)="changeSort('endKM')" style="cursor: pointer">
+            End KM {{ getSortIcon("endKM") }}
+          </th>
           <th (click)="changeSort('totalKM')" style="cursor: pointer">
-            Distance
-            <span *ngIf="sortBy === 'totalKM'">
-              {{ sortOrder === "asc" ? "↑" : "↓" }}
-            </span>
+            Distance {{ getSortIcon("totalKM") }}
           </th>
-          <th>Purpose</th>
+          <th (click)="changeSort('purpose')" style="cursor: pointer">
+            Purpose {{ getSortIcon("purpose") }}
+          </th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -145,7 +149,7 @@
           <td>
             <a
               [routerLink]="['/drives/edit', d._id]"
-              class="btn btn-sm btn-outline-secondary me-2"
+              class="btn btn-sm btn-outline-warning me-2"
             >
               Edit
             </a>
@@ -154,7 +158,7 @@
               class="btn btn-sm btn-outline-danger"
               (click)="openDeleteModal(d._id!)"
             >
-              Del
+              Delete
             </button>
           </td>
         </tr>

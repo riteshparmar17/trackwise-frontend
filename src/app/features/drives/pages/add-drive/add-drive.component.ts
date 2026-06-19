@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { DriveService } from '../../services/drive.service';
 import { PURPOSE_OPTIONS } from '../../constant/purpose-option';
+import { ToastService } from '../../../../shared/services/toast.service';
 
 
 @Component({
@@ -16,13 +17,13 @@ export class AddDriveComponent {
   loading: boolean = false;
   error: string = '';
   purposes = PURPOSE_OPTIONS;
-
   form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private driveService: DriveService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {
     this.form = this.fb.group({
       date: ['', Validators.required],
@@ -56,10 +57,11 @@ export class AddDriveComponent {
     this.loading = true;
     this.driveService.createDrive(this.form.value).subscribe({
       next: (res) => {
+        this.toastService.success('Drive log created successfully');
         this.router.navigate(['/drives']);
       },
       error: (err) => {
-        this.error = err?.error?.message || 'Failed to create drive';
+        this.toastService.error(err?.error?.message || 'Failed to create drive');
         this.loading = false;
       }
     });
