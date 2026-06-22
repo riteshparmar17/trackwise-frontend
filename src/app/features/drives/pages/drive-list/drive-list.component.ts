@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Drive } from '../../models/drive.model';
 import { DriveService } from '../../services/drive.service';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { dateRangeValidator } from '../../../../shared/validators/date-range.validator';
 
 declare const bootstrap: any;
 
@@ -20,7 +21,7 @@ export class DriveListComponent {
   loading: boolean = false;
   error: string = '';
   totalKM: number = 0;
-  filterForm: FormGroup;
+  driveFilterForm: FormGroup;
   selectedDriveId: string = '';
   page: number = 1;
   limit: number = 10;
@@ -28,6 +29,8 @@ export class DriveListComponent {
   totalEntries: number = 0;
   sortBy: string = 'date';
   sortOrder: 'asc' | 'desc' = 'desc';
+  showFilters: boolean = false;
+  isMobile: boolean = window.innerWidth < 768;
 
   constructor(
     private driveService: DriveService,
@@ -35,9 +38,11 @@ export class DriveListComponent {
     private fb: FormBuilder,
     private toastService: ToastService
   ) {
-    this.filterForm = this.fb.group({
-      from: [''],
-      to: ['']
+    this.driveFilterForm = this.fb.group({
+      fromDate: [''],
+      toDate: ['']
+    }, {
+      validators: dateRangeValidator()
     });
   }
 
@@ -59,9 +64,9 @@ export class DriveListComponent {
     if (this.totalPages && page > this.totalPages) return;
 
     this.loading = true;
-    const { from, to } = this.filterForm.value;
+    const { fromDate, toDate } = this.driveFilterForm.value;
 
-    this.driveService.getFilteredDrives(from, to, page, this.limit, this.sortBy, this.sortOrder).subscribe({
+    this.driveService.getFilteredDrives(fromDate, toDate, page, this.limit, this.sortBy, this.sortOrder).subscribe({
       next: (res) => {
         this.drives = res.data.items || [];
         this.totalPages = res.data.meta.totalPages || 0;
@@ -75,14 +80,23 @@ export class DriveListComponent {
         this.loading = false;
       }
     });
+
+    if (this.isMobile) {
+      this.showFilters = false;
+    }
   }
 
   get hasData(): boolean {
     return this.drives && this.drives.length > 0;
   }
 
+  @HostListener('window:resize')
+  onResize(): void {
+    this.isMobile = window.innerWidth < 768;
+  }
+
   resetFilters(): void {
-    this.filterForm.reset();
+    this.driveFilterForm.reset();
     this.page = 1;
     this.totalPages = 0;
     this.loadDrives(1);

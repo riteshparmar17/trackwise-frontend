@@ -6,58 +6,89 @@
     <a routerLink="/expenses/add" class="btn btn-primary"> + Add Expense </a>
   </div>
 
+  <!-- Mobile Filters Button -->
+
+  <div class="d-md-none mb-3">
+    <button
+      type="button"
+      class="btn btn-outline-primary w-100"
+      (click)="showFilters = !showFilters"
+    >
+      <i class="bi" [ngClass]="showFilters ? 'bi-funnel-fill' : 'bi-funnel'">
+      </i>
+      {{ showFilters ? "Hide Filters" : "Show Filters" }}
+    </button>
+  </div>
+
   <!-- Filters -->
 
-  <div class="card mb-3 p-3">
+  <div class="card mb-3 p-3" [class.d-none]="!showFilters && isMobile">
     <div class="row g-2 align-items-end">
-      <div class="col-md-3">
-        <label class="form-label small mb-1"> From </label>
-        <input
-          type="date"
-          [(ngModel)]="from"
-          class="form-control form-control-sm"
-        />
-      </div>
+      <form
+        [formGroup]="expenseFilterForm"
+        (ngSubmit)="loadExpenses()"
+        class="row g-2 align-items-end"
+      >
+        <div class="col-md-3">
+          <label class="form-label small mb-1"> From </label>
+          <input
+            type="date"
+            formControlName="fromDate"
+            class="form-control form-control-sm"
+            [class.is-invalid]="expenseFilterForm.errors?.['invalidDateRange']"
+          />
+        </div>
 
-      <div class="col-md-3">
-        <label class="form-label small mb-1"> To </label>
-        <input
-          type="date"
-          [(ngModel)]="to"
-          class="form-control form-control-sm"
-        />
-      </div>
+        <div class="col-md-3">
+          <label class="form-label small mb-1"> To </label>
+          <input
+            type="date"
+            formControlName="toDate"
+            class="form-control form-control-sm"
+            [class.is-invalid]="expenseFilterForm.errors?.['invalidDateRange']"
+          />
+        </div>
 
-      <div class="col-md-3">
-        <label class="form-label small mb-1"> Category </label>
-        <select [(ngModel)]="category" class="form-control form-control-sm">
-          <option value="">All Categories</option>
-          <option *ngFor="let item of categories" [value]="item">
-            {{ item }}
-          </option>
-        </select>
-      </div>
+        <div class="col-md-3">
+          <label class="form-label small mb-1"> Category </label>
+          <select formControlName="category" class="form-select">
+            <option value="" selected>All Categories</option>
+            <option *ngFor="let item of categories" [value]="item">
+              {{ item }}
+            </option>
+          </select>
+        </div>
 
-      <div class="col-md-3 d-flex gap-2">
-        <button
-          class="btn btn-outline-primary btn-sm flex-fill"
-          (click)="applyFilters()"
-        >
-          Go
-        </button>
+        <div class="col-md-3 d-flex gap-2">
+          <button
+            class="btn btn-outline-primary btn-sm flex-fill"
+            (click)="applyFilters()"
+            [disabled]="expenseFilterForm.invalid"
+          >
+            Go
+          </button>
 
-        <button
-          class="btn btn-outline-secondary btn-sm flex-fill"
-          (click)="resetFilters()"
-        >
-          Reset
-        </button>
+          <button
+            class="btn btn-outline-secondary btn-sm flex-fill"
+            (click)="resetFilters()"
+          >
+            Reset
+          </button>
+        </div>
+      </form>
+      <div
+        class="invalid-feedback d-block"
+        *ngIf="expenseFilterForm.errors?.['invalidDateRange']"
+      >
+        *From Date cannot be later than To Date.
       </div>
     </div>
   </div>
 
   <div class="card mb-3 p-3 bg-primary bg-opacity-10">
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div
+      class="d-flex justify-content-between align-items-center flex-wrap expense-stats"
+    >
       <div>
         Total Amount:
         <strong>

@@ -1,0 +1,178 @@
+<div class="container mt-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="h4 fw-bold mb-0">💳 Reports</h2>
+    </div>
+    <div class="position-relative" #exportDropdown>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="toggleExportMenu()"
+      >
+        <i class="bi bi-download me-1"></i>
+        Export
+      </button>
+      <div
+        *ngIf="exportMenuOpen"
+        class="dropdown-menu show position-absolute end-0 mt-1 export-dropdown"
+      >
+        <button class="dropdown-item" (click)="exportToExcel()">Excel</button>
+        <button class="dropdown-item" (click)="exportToPdf()">PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Filters Button -->
+
+  <div class="d-md-none mb-3">
+    <button
+      type="button"
+      class="btn btn-outline-primary w-100"
+      (click)="showFilters = !showFilters"
+    >
+      <i class="bi" [ngClass]="showFilters ? 'bi-funnel-fill' : 'bi-funnel'">
+      </i>
+      {{ showFilters ? "Hide Filters" : "Show Filters" }}
+    </button>
+  </div>
+
+  <!-- Filters -->
+
+  <div class="card mb-3 p-3" [class.d-none]="!showFilters && isMobile">
+    <div class="row g-2 align-items-end">
+      <form
+        [formGroup]="form"
+        (ngSubmit)="loadReport()"
+        class="row g-2 align-items-end"
+      >
+        <div class="col-md-3">
+          <label class="form-label small mb-1"> From </label>
+          <input
+            type="date"
+            formControlName="fromDate"
+            class="form-control form-control-sm"
+            [class.is-invalid]="form.errors?.['invalidDateRange']"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small mb-1"> To </label>
+          <input
+            type="date"
+            formControlName="toDate"
+            class="form-control form-control-sm"
+            [class.is-invalid]="form.errors?.['invalidDateRange']"
+          />
+        </div>
+
+        <div class="col-md-3 gap-2">
+          <button
+            class="btn btn-outline-primary btn-sm flex-fill w-100"
+            (click)="applyFilter()"
+            [disabled]="form.invalid"
+          >
+            Go
+          </button>
+        </div>
+        <div class="col-md-3 gap-2">
+          <button
+            class="btn btn-outline-secondary btn-sm flex-fill w-100"
+            (click)="resetFilter()"
+          >
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+    <div
+      class="invalid-feedback d-block"
+      *ngIf="form.errors?.['invalidDateRange']"
+    >
+      *From Date cannot be later than To Date.
+    </div>
+  </div>
+
+  <!-- Stats -->
+
+  <div class="row mb-4 justify-content-center text-center" *ngIf="report">
+    <div class="col-md-4 col-sm-4 col">
+      <div class="stat-card p-3 bg-success bg-opacity-10 rounded-2">
+        <h6 class="small text-muted">Total KMs</h6>
+        <h4 class="fw-bold text-success">{{ report.stats.totalKms }}</h4>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-sm-4 col">
+      <div class="stat-card p-3 bg-warning bg-opacity-10 rounded-2">
+        <h6 class="small text-muted">Total Spent</h6>
+        <h4 class="fw-bold text-warning">
+          {{ report.stats.totalSpent | currency: "CAD" }}
+        </h4>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-sm-4 col">
+      <div class="stat-card p-3 bg-danger bg-opacity-10 rounded-2">
+        <h6 class="small text-muted">Total HST</h6>
+        <h4 class="fw-bold text-danger">
+          {{ report.stats.totalHst | currency: "CAD" }}
+        </h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kms By Month -->
+
+  <h5 class="mt-4">KMs by Month</h5>
+  <table class="table table-striped" *ngIf="hasKms(); else noKms">
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th>Month</th>
+        <th>Trips</th>
+        <th>Total KMs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of report?.kmsByMonth">
+        <td>{{ row.year }}</td>
+        <td>{{ row.month }}</td>
+        <td>{{ row.trips }}</td>
+        <td>{{ row.totalKms }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noKms>
+    <div class="alert alert-warning">No KMS records found.</div>
+  </ng-template>
+
+  <!-- Expenses by Category -->
+
+  <h5 class="mt-4">Expenses by Category</h5>
+  <table
+    class="table table-bordered mb-4"
+    *ngIf="hasExpenses(); else noExpense"
+  >
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Count</th>
+        <th>HST</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of report?.expenseByCategory">
+        <td>{{ row.category }}</td>
+        <td>{{ row.count }}</td>
+        <td>{{ row.hst }}</td>
+        <td>{{ row.total }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noExpense>
+    <div class="alert alert-warning">No Expense records found.</div>
+  </ng-template>
+</div>

@@ -76,9 +76,29 @@
             formControlName="endKM"
             placeholder="Leave blank to fill in later"
             class="form-control"
+            [ngClass]="{
+              'form-control': true,
+              'is-invalid':
+                (endKM?.invalid && (endKM?.dirty || endKM?.touched)) ||
+                (form.errors?.['invalidKmRange'] && endKM?.dirty),
+              'is-valid':
+                endKM?.valid &&
+                !form.errors?.['invalidKmRange'] &&
+                (endKM?.dirty || endKM?.touched),
+            }"
           />
 
           <span class="input-group-text"> km </span>
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              form.errors?.['invalidKmRange'] &&
+              endKM?.value &&
+              (endKM?.dirty || endKM?.touched)
+            "
+          >
+            End KM cannot be less than Start KM.
+          </div>
         </div>
       </div>
 
@@ -87,11 +107,8 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label fw-semibold"> Purpose </label>
-
+        <label class="form-label fw-semibold">Select Purpose </label>
         <select class="form-select" formControlName="purpose">
-          <option value="">Select purpose</option>
-
           <option *ngFor="let item of purposes" [value]="item">
             {{ item }}
           </option>
