@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { DriveService } from '../../services/drive.service';
 import { PURPOSE_OPTIONS } from '../../constant/purpose-option';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { kmRangeValidator } from '../../../../shared/validators/km-range.validator';
 
 
 @Component({
@@ -29,8 +30,10 @@ export class AddDriveComponent {
       date: ['', Validators.required],
       startKM: ['', Validators.required],
       endKM: [''],
-      purpose: [''],
+      purpose: ['Business', Validators.required],
       notes: ['']
+    }, {
+      validators: kmRangeValidator()
     });
   }
   get date() {

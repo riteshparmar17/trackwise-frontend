@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { kmRangeValidator } from '../../../../shared/validators/km-range.validator';
 
 @Component({
   selector: 'app-edit-drive',
@@ -28,9 +29,12 @@ export class EditDriveComponent {
     private toastService: ToastService
   ) {
     this.form = this.fb.group({
+      startKM: [0],
       endKM: ['', Validators.required],
       purpose: [''],
       notes: ['']
+    }, {
+      validators: kmRangeValidator()
     });
   }
 
@@ -44,6 +48,7 @@ export class EditDriveComponent {
       next: (data) => {
         this.drive = data;
         this.form.patchValue({
+          startKM: this.drive?.startKM,
           endKM: this.drive?.endKM || '',
           purpose: this.drive?.purpose,
           notes: this.drive?.notes
@@ -80,10 +85,6 @@ export class EditDriveComponent {
     }
 
     const endKM = Number(this.form.get('endKM')?.value);
-    if (endKM < this.drive.startKM) {
-        this.toastService.error('End KM cannot be less than Start KM');
-      return;
-    }
 
     this.loading = true;
     const updateData = {

@@ -8,4 +8,8 @@
   .table {
     font-size: 0.85rem;
   }
+
+  .expense-stats{
+    display: block!important;
+  }
 }
