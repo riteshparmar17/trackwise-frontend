@@ -1,27 +1,33 @@
 <h1 class="h3 fw-bold mb-4">Dashboard</h1>
 
-<div class="row g-3 mb-4">
-  <div class="col-6 col-md-3">
-    <div class="stat-card bg-primary bg-opacity-10">
-      <div class="fs-2 fw-bold text-primary">{{ totalKm }}</div>
+<div class="row g-3 mb-3 text-center">
+  <div class="col-6 col-md-3 col-sm-3">
+    <div class="stat-card bg-primary bg-opacity-10 rounded-2 p-2">
+      <div class="fs-2 fw-bold text-primary">{{ data?.stats?.totalKms }}</div>
       <div class="small text-muted">Total KMs</div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="stat-card bg-success bg-opacity-10">
-      <div class="fs-2 fw-bold text-success">{{ totalDrives }}</div>
+  <div class="col-6 col-md-3 col-sm-3">
+    <div class="stat-card bg-success bg-opacity-10 rounded-2 p-2">
+      <div class="fs-2 fw-bold text-success">
+        {{ data?.stats?.totalDrives }}
+      </div>
       <div class="small text-muted">Drive Logs</div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="stat-card bg-warning bg-opacity-10">
-      <div class="fs-2 fw-bold text-warning">{{ incomplete }}</div>
+  <div class="col-6 col-md-3 col-sm-3">
+    <div class="stat-card bg-warning bg-opacity-10 rounded-2 p-2">
+      <div class="fs-2 fw-bold text-warning">
+        {{ data?.stats?.incompleteDrives }}
+      </div>
       <div class="small text-muted">Need End KM</div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="stat-card bg-danger bg-opacity-10">
-      <div class="fs-2 fw-bold text-danger">\${{ totalSpent }}</div>
+  <div class="col-6 col-md-3 col-sm-3 col">
+    <div class="stat-card bg-danger bg-opacity-10 rounded-2 p-2">
+      <div class="fs-2 fw-bold text-danger">
+        {{ data?.stats?.totalSpent | currency }}
+      </div>
       <div class="small text-muted">Total Spent</div>
     </div>
   </div>
@@ -40,19 +46,21 @@
   </div>
 </div>
 
-<div *ngIf="recentDrives.length" class="card mb-3">
-  <div class="card-header bg-transparent fw-semibold">Recent Drives</div>
+<!-- ================= Recent Drives ================= -->
+
+<div class="card-header bg-transparent fw-semibold">Recent Drives</div>
+<div *ngIf="data?.recentDrives" class="card mb-3">
   <ul class="list-group list-group-flush">
     <li
-      *ngFor="let d of recentDrives"
+      *ngFor="let d of data?.recentDrives"
       class="list-group-item d-flex justify-content-between"
     >
-      <span>{{ d.logDate }} — {{ d.purpose }}</span>
+      <span>{{ d.date | date: "longDate" }} — {{ d.purpose }}</span>
       <span>
         <span
-          *ngIf="d.distanceKm; else incompleteBadge"
+          *ngIf="d.totalKM !== 0; else incompleteBadge"
           class="badge bg-primary"
-          >{{ d.distanceKm }} km</span
+          >{{ d.totalKM }} km</span
         >
         <ng-template #incompleteBadge>
           <span class="badge bg-warning text-dark">⏳ Incomplete</span>
@@ -60,4 +68,31 @@
       </span>
     </li>
   </ul>
+</div>
+
+<!-- ================= Recent Expenses ================= -->
+<div class="card-header bg-transparent fw-semibold">Recent Expenses</div>
+<div class="card mb-3">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>HST</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let e of data?.recentExpenses">
+        <td>{{ e.date | date: "mediumDate" }}</td>
+        <td>{{ e.category }}</td>
+        <td>{{ e.totalAmount }}</td>
+        <td>{{ e.taxAmount }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="container mt-4" *ngIf="loading">
+  <div class="alert alert-info">Loading dashboard...</div>
 </div>
