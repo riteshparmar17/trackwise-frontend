@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Expense } from '../../models/expense.model';
 import { EXPENSE_CATEGORIES } from '../../constant/expense-categories';
 import { ExpenseService } from '../../services/expense.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { dateRangeValidator } from '../../../../shared/validators/date-range.validator';
 
 @Component({
   selector: 'app-expense-list',
-  imports: [CommonModule, FormsModule, RouterModule, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ConfirmDialogComponent, ReactiveFormsModule],
   templateUrl: './expense-list.component.html',
   styleUrl: './expense-list.component.css'
 })
@@ -19,9 +20,9 @@ export class ExpenseListComponent {
   loading: boolean = false;
   selectedExpenseId: string = '';
   categories = EXPENSE_CATEGORIES;
-  from = '';
-  to = '';
-  category: string = '';
+  expenseFilterForm: FormGroup;
+  showFilters: boolean = false;
+  isMobile: boolean = window.innerWidth < 768;
   currentPage: number = 1;
   pageSize: number = 10;
   totalPages: number = 10;
@@ -35,18 +36,29 @@ export class ExpenseListComponent {
 
   constructor(
     private expenseService: ExpenseService,
-    private toastService: ToastService
-  ) { }
+    private toastService: ToastService,
+    private fb: FormBuilder
+  ) {
+    this.expenseFilterForm = this.fb.group({
+      fromDate: [''],
+      toDate: [''],
+      category: ['']
+    }, {
+      validators: dateRangeValidator()
+    });
+  }
+
 
   ngOnInit(): void {
     this.loadExpenses();
   }
 
   loadExpenses(page = 1): void {
+    const { fromDate, toDate, category } = this.expenseFilterForm.value;
     const filters = {
-      from: this.from,
-      to: this.to,
-      category: this.category,
+      fromDate,
+      toDate,
+      category,
       page,
       limit: this.pageSize,
       sortBy: this.sortBy,
@@ -75,12 +87,22 @@ export class ExpenseListComponent {
 
   applyFilters(): void {
     this.loadExpenses(1);
+    if (this.isMobile) {
+      this.showFilters = false;
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.isMobile = window.innerWidth < 768;
   }
 
   resetFilters(): void {
-    this.from = '';
-    this.to = '';
-    this.category = '';
+    this.expenseFilterForm.reset({
+      fromDate: '',
+      toDate: '',
+      category: ''
+    });
     this.loadExpenses(1);
   }
 

@@ -5,11 +5,25 @@
     <a routerLink="/drives/add" class="btn btn-primary"> + Add Log </a>
   </div>
 
+  <!-- Mobile Filters Button -->
+
+  <div class="d-md-none mb-3">
+    <button
+      type="button"
+      class="btn btn-outline-primary w-100"
+      (click)="showFilters = !showFilters"
+    >
+      <i class="bi" [ngClass]="showFilters ? 'bi-funnel-fill' : 'bi-funnel'">
+      </i>
+      {{ showFilters ? "Hide Filters" : "Show Filters" }}
+    </button>
+  </div>
+
   <!-- Filter -->
 
-  <div class="card mb-3 p-3">
+  <div class="card mb-3 p-3" [class.d-none]="!showFilters && isMobile">
     <form
-      [formGroup]="filterForm"
+      [formGroup]="driveFilterForm"
       (ngSubmit)="loadDrives()"
       class="row g-2 align-items-end"
     >
@@ -18,8 +32,9 @@
 
         <input
           type="date"
-          formControlName="from"
+          formControlName="fromDate"
           class="form-control form-control-sm"
+          [class.is-invalid]="driveFilterForm.errors?.['invalidDateRange']"
         />
       </div>
 
@@ -28,13 +43,18 @@
 
         <input
           type="date"
-          formControlName="to"
+          formControlName="toDate"
           class="form-control form-control-sm"
+          [class.is-invalid]="driveFilterForm.errors?.['invalidDateRange']"
         />
       </div>
 
       <div class="col-md-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+        <button
+          type="submit"
+          class="btn btn-outline-primary btn-sm w-100"
+          [disabled]="driveFilterForm.invalid"
+        >
           Go
         </button>
       </div>
@@ -48,6 +68,12 @@
         </button>
       </div>
     </form>
+    <div
+      class="invalid-feedback d-block"
+      *ngIf="driveFilterForm.errors?.['invalidDateRange']"
+    >
+      *From Date cannot be later than To Date.
+    </div>
   </div>
 
   <!-- Stats -->
@@ -113,26 +139,21 @@
           <td>
             {{ d.date | date: "mediumDate" }}
           </td>
-
           <td>
             {{ d.startKM }}
           </td>
-
           <td>
             <ng-container *ngIf="d.endKM">
               {{ d.endKM }}
             </ng-container>
-
             <span *ngIf="!d.endKM" class="badge bg-warning text-dark">
               ⏳ Not set
             </span>
           </td>
-
           <td>
             <ng-container *ngIf="d.totalKM">
               <strong> {{ d.totalKM }} km </strong>
             </ng-container>
-
             <a
               *ngIf="!d.totalKM"
               [routerLink]="['/drives/edit', d._id]"
@@ -141,11 +162,9 @@
               Add End KM
             </a>
           </td>
-
           <td>
             {{ d.purpose }}
           </td>
-
           <td>
             <a
               [routerLink]="['/drives/edit', d._id]"
@@ -153,7 +172,6 @@
             >
               Edit
             </a>
-
             <button
               class="btn btn-sm btn-outline-danger"
               (click)="openDeleteModal(d._id!)"

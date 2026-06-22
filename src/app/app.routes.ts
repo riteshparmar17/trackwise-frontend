@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
+import { NotFoundComponent } from './core/pages/not-found/not-found.component';
 
 export const routes: Routes = [
     {
@@ -12,6 +13,7 @@ export const routes: Routes = [
             { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
             { path: 'drives', loadChildren: () => import('./features/drives/drives.routes').then(m => m.DRIVES_ROUTES) },
             { path: 'expenses', loadChildren: () => import('./features/expenses/expense.routes').then(m => m.EXPENSES_ROUTES) },
+            { path: 'reports', loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES) },
         ]
     },
     {
@@ -24,5 +26,9 @@ export const routes: Routes = [
             { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
             { path: 'verify-email', loadComponent: () => import('./features/auth/verify-email/verify-email.component').then(m => m.VerifyEmailComponent) }
         ]
+    },
+    {
+        path: '**',
+        component: NotFoundComponent
     }
 ];

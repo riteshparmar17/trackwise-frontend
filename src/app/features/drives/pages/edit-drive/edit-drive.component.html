@@ -32,7 +32,6 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="mb-3">
         <label class="form-label fw-semibold"> End KM * </label>
-
         <div class="input-group">
           <input
             type="number"
@@ -42,18 +41,35 @@
             placeholder="Enter odometer reading"
             [ngClass]="{
               'form-control': true,
-              'is-invalid': endKM?.invalid && (endKM?.dirty || endKM?.touched),
-              'is-valid': endKM?.valid && (endKM?.dirty || endKM?.touched),
+              'is-invalid':
+                (endKM?.invalid && (endKM?.dirty || endKM?.touched)) ||
+                (form.errors?.['invalidKmRange'] && endKM?.dirty),
+              'is-valid':
+                endKM?.valid &&
+                !form.errors?.['invalidKmRange'] &&
+                (endKM?.dirty || endKM?.touched),
             }"
           />
 
           <span class="input-group-text"> km </span>
 
           <div
-            *ngIf="endKM?.invalid && (endKM?.dirty || endKM?.touched)"
+            *ngIf="
+              endKM?.hasError('required') && (endKM?.dirty || endKM?.touched)
+            "
             class="invalid-feedback"
           >
             End KM is required.
+          </div>
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              form.errors?.['invalidKmRange'] &&
+              endKM?.value &&
+              (endKM?.dirty || endKM?.touched)
+            "
+          >
+            End KM cannot be less than Start KM.
           </div>
         </div>
       </div>
