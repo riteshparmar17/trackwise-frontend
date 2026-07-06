@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbCollapseModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
+import { SettingsService } from '../../features/settings/services/settings.service';
 
 @Component({
   standalone: true,
@@ -19,8 +20,33 @@ export class MainLayoutComponent {
     firstName: 'Ritesh',
     email: 'ritesh@example.com'
   };
+  loading: boolean = false;
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private settingsService: SettingsService
+  ) { }
+
+  ngOnInit(): void {
+    this.loadProfile();
+  }
+
+  loadProfile(): void {
+    this.loading = true;
+    this.settingsService
+      .getProfile()
+      .subscribe({
+        next: (res: any) => {
+          this.currentUser.firstName = res?.data.name
+          this.currentUser.email = res?.data.email;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+        }
+      });
+  }
 
   logout() {
     this.authService.logout();

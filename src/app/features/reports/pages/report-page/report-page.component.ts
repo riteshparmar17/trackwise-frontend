@@ -1,6 +1,6 @@
-import { Component, ElementRef, HostListener, ViewChild, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { ReportResponse } from '../../models/report.model';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ReportService } from '../../services/report.service';
 import { CommonModule } from '@angular/common';
 import { dateRangeValidator } from '../../../../shared/validators/date-range.validator';
