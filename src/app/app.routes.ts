@@ -14,6 +14,7 @@ export const routes: Routes = [
             { path: 'drives', loadChildren: () => import('./features/drives/drives.routes').then(m => m.DRIVES_ROUTES) },
             { path: 'expenses', loadChildren: () => import('./features/expenses/expense.routes').then(m => m.EXPENSES_ROUTES) },
             { path: 'reports', loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES) },
+            { path: 'settings', loadChildren: () => import('./features/settings/settings.routes').then(m => m.SETTINGS_ROUTES) }
         ]
     },
     {

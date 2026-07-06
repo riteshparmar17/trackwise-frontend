@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { Drive } from '../../models/drive.model';
-import { PURPOSE_OPTIONS } from '../../constant/purpose-option';
 import { DriveService } from '../../services/drive.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { kmRangeValidator } from '../../../../shared/validators/km-range.validator';
+import { LookupService } from '../../../settings/services/lookup.service';
 
 @Component({
   selector: 'app-edit-drive',
@@ -17,7 +17,7 @@ import { kmRangeValidator } from '../../../../shared/validators/km-range.validat
 export class EditDriveComponent {
   loading: boolean = false;
   drive?: Drive;
-  purposes = PURPOSE_OPTIONS;
+  purposes: string[] = [];
   distancePreview: number = 0;
   form: FormGroup;
 
@@ -26,7 +26,8 @@ export class EditDriveComponent {
     private router: Router,
     private route: ActivatedRoute,
     private driveService: DriveService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private lookupService: LookupService
   ) {
     this.form = this.fb.group({
       startKM: [0],
@@ -59,7 +60,7 @@ export class EditDriveComponent {
         this.toastService.error(err.error?.message || 'Failed to load drive details');
       }
     });
-
+    this.loadPurposes();
   }
 
   updateDistancePreview() {
@@ -111,4 +112,16 @@ export class EditDriveComponent {
     return this.form.get('endKM');
   }
 
+  loadPurposes(): void {
+    this.lookupService
+      .getLookupsByType('purpose')
+      .subscribe({
+        next: (res: any) => {
+          this.purposes = res.data.map((item: any) => item.name);
+        },
+        error: (err) => {
+          this.toastService.error(err?.error.message || 'Lookups load failed');
+        }
+      });
+  }  
 }

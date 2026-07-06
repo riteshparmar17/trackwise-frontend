@@ -32,6 +32,10 @@ export class AuthService {
     return this.http.post(`${this.api}/reset-password`, data);
   }
 
+  changePassword(data: any) {
+    return this.http.patch(`${this.api}/change-password`, data);
+  }
+
   saveToken(res: any) {
     localStorage.setItem('access_token', res.data.accessToken);
     localStorage.setItem('refresh_token', res.data.refreshToken);
