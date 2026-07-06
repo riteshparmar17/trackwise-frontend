@@ -16,6 +16,7 @@ export class ResetPasswordComponent {
   token: string = '';
   message: string = '';
   error: string = '';
+  showPassword: boolean = false;
 
   constructor(
     private auth: AuthService,

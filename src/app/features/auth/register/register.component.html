@@ -49,17 +49,28 @@
     </div>
     <div class="mb-3">
       <label class="form-label fw-semibold">Password</label>
-      <input
-        formControlName="password"
-        type="password"
-        [ngClass]="{
-          'form-control': true,
-          'is-invalid':
-            password?.invalid && (password?.dirty || password?.touched),
-          'is-valid': password?.valid && (password?.dirty || password?.touched),
-        }"
-        placeholder="Password"
-      />
+      <div class="input-group">
+        <input
+          formControlName="password"
+          [type]="showPassword ? 'text' : 'password'"
+          [ngClass]="{
+            'form-control': true,
+            'is-invalid':
+              password?.invalid && (password?.dirty || password?.touched),
+            'is-valid':
+              password?.valid && (password?.dirty || password?.touched),
+          }"
+          placeholder="Password"
+        />
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="showPassword = !showPassword"
+          tabindex="-1"
+        >
+          {{ showPassword ? "🙈" : "👁️" }}
+        </button>
+      </div>
       <div
         *ngIf="password?.invalid && (password?.dirty || password?.touched)"
         class="invalid-feedback"
