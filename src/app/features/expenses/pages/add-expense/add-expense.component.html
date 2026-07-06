@@ -49,8 +49,8 @@
         >
           <option value="">Select Category</option>
 
-          <option *ngFor="let item of categories" [value]="item">
-            {{ item }}
+          <option *ngFor="let category of categories" [value]="category">
+            {{ category }}
           </option>
         </select>
 
@@ -66,15 +66,35 @@
 
       <div class="mb-3">
         <label class="form-label fw-semibold"> Vendor / Store * </label>
+        <select
+          formControlName="vendor"
+          [ngClass]="{
+            'form-select': true,
+            'is-invalid': vendor?.invalid && (vendor?.dirty || vendor?.touched),
+            'is-valid': vendor?.valid && (vendor?.dirty || vendor?.touched),
+          }"
+        >
+          <option value="">Select Vendor</option>
+          <option *ngFor="let vendor of vendors" [value]="vendor">
+            {{ vendor }}
+          </option>
+          <option value="other">Others</option>
+        </select>
 
         <input
           type="text"
-          formControlName="vendor"
-          placeholder="e.g. Shell, Costco, Petro Canada"
+          formControlName="customVendor"
+          class="form-control mt-2"
+          *ngIf="form.get('vendor')?.value === 'other'"
+          placeholder="Enter vendor name"
           [ngClass]="{
             'form-control': true,
-            'is-invalid': vendor?.invalid && (vendor?.dirty || vendor?.touched),
-            'is-valid': vendor?.valid && (vendor?.dirty || vendor?.touched),
+            'is-invalid':
+              customVendor?.invalid &&
+              (customVendor?.dirty || customVendor?.touched),
+            'is-valid':
+              customVendor?.valid &&
+              (customVendor?.dirty || customVendor?.touched),
           }"
         />
 
@@ -83,6 +103,15 @@
           class="invalid-feedback"
         >
           Vendor / Store name is required.
+        </div>
+        <div
+          *ngIf="
+            customVendor?.invalid &&
+            (customVendor?.dirty || customVendor?.touched)
+          "
+          class="invalid-feedback"
+        >
+          Vendor / Store name is required when "Others" is selected.
         </div>
       </div>
 

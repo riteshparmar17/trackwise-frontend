@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { EXPENSE_CATEGORIES } from '../../constant/expense-categories';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExpenseService } from '../../services/expense.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MAX_RECEIPT_SIZE, RECEIPT_ALLOWED_TYPES } from '../../constant/file-types';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { LookupService } from '../../../settings/services/lookup.service';
 
 @Component({
   selector: 'app-add-expense',
@@ -16,7 +16,8 @@ import { ToastService } from '../../../../shared/services/toast.service';
 export class AddExpenseComponent {
   loading: boolean = false;
   selectedFile?: File;
-  categories = EXPENSE_CATEGORIES;
+  categories: string[] = [];
+  vendors: string[] = [];
   form: FormGroup;
   previewUrl: string | null = null;
 
@@ -24,12 +25,14 @@ export class AddExpenseComponent {
     private fb: FormBuilder,
     private expenseService: ExpenseService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private lookupService: LookupService
   ) {
     this.form = this.fb.group({
       date: ['', Validators.required],
       category: ['', Validators.required],
       vendor: ['', Validators.required],
+      customVendor: [''],
       totalAmount: ['', [Validators.required, Validators.min(0.1)]],
       taxAmount: [{ value: 0, disabled: true }],
       preTaxAmount: [{ value: 0, disabled: true }],
@@ -41,6 +44,9 @@ export class AddExpenseComponent {
     this.form.get('totalAmount')?.valueChanges.subscribe(value => {
       this.calculateAmounts(value);
     });
+    this.loadCategories();
+    this.loadVendors();
+    this.checkCustomVendor();
   }
 
   get date() {
@@ -53,6 +59,10 @@ export class AddExpenseComponent {
 
   get vendor() {
     return this.form.get('vendor');
+  }
+
+  get customVendor() {
+    return this.form.get('customVendor');
   }
 
   get totalAmount() {
@@ -142,5 +152,47 @@ export class AddExpenseComponent {
       emitEvent: false
     });
 
+  }
+
+  checkCustomVendor(): void {
+    this.form.get('vendor')?.valueChanges.subscribe(value => {
+      const customVendorControl = this.form.get('customVendor');
+      if (value === 'other') {
+        customVendorControl?.setValidators([
+          Validators.required,
+          Validators.maxLength(100)
+        ]);
+      } else {
+        customVendorControl?.clearValidators();
+        customVendorControl?.setValue('');
+      }
+      customVendorControl?.updateValueAndValidity();
+    });
+  }
+
+  loadCategories(): void {
+    this.lookupService
+      .getLookupsByType('category')
+      .subscribe({
+        next: (res: any) => {
+          this.categories = res.data.map((item: any) => item.name);
+        },
+        error: (err) => {
+          this.toastService.error(err?.error.message || 'Lookups load failed');
+        }
+      });
+  }
+
+  loadVendors(): void {
+    this.lookupService
+      .getLookupsByType('vendor')
+      .subscribe({
+        next: (res: any) => {
+          this.vendors = res.data.map((item: any) => item.name);
+        },
+        error: (err) => {
+          this.toastService.error(err?.error.message || 'Lookups load failed');
+        }
+      });
   }
 }
