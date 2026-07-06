@@ -3,9 +3,9 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { DriveService } from '../../services/drive.service';
-import { PURPOSE_OPTIONS } from '../../constant/purpose-option';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { kmRangeValidator } from '../../../../shared/validators/km-range.validator';
+import { LookupService } from '../../../settings/services/lookup.service';
 
 
 @Component({
@@ -17,14 +17,15 @@ import { kmRangeValidator } from '../../../../shared/validators/km-range.validat
 export class AddDriveComponent {
   loading: boolean = false;
   error: string = '';
-  purposes = PURPOSE_OPTIONS;
+  purposes: string[] = [];
   form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private driveService: DriveService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private lookupService: LookupService
   ) {
     this.form = this.fb.group({
       date: ['', Validators.required],
@@ -36,6 +37,11 @@ export class AddDriveComponent {
       validators: kmRangeValidator()
     });
   }
+
+  ngOnInit(): void {
+    this.loadPurposes();
+  }
+
   get date() {
     return this.form.get('date');
   }
@@ -68,5 +74,18 @@ export class AddDriveComponent {
         this.loading = false;
       }
     });
+  }
+
+  loadPurposes(): void {
+    this.lookupService
+      .getLookupsByType('purpose')
+      .subscribe({
+        next: (res: any) => {
+          this.purposes = res.data.map((item: any) => item.name);
+        },
+        error: (err) => {
+          this.toastService.error(err?.error.message || 'Lookups load failed');
+        }
+      });
   }
 }

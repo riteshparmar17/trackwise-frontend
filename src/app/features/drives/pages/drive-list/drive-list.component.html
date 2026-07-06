@@ -137,7 +137,7 @@
       <tbody>
         <tr *ngFor="let d of drives">
           <td>
-            {{ d.date | date: "mediumDate" }}
+            {{ d.date | date: "mediumDate" : "UTC" }}
           </td>
           <td>
             {{ d.startKM }}

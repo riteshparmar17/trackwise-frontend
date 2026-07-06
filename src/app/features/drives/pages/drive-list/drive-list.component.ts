@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener } from '@angular/core';
 import { Drive } from '../../models/drive.model';
 import { DriveService } from '../../services/drive.service';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ToastService } from '../../../../shared/services/toast.service';
@@ -36,7 +36,8 @@ export class DriveListComponent {
     private driveService: DriveService,
     private router: Router,
     private fb: FormBuilder,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private route: ActivatedRoute
   ) {
     this.driveFilterForm = this.fb.group({
       fromDate: [''],
@@ -47,7 +48,17 @@ export class DriveListComponent {
   }
 
   ngOnInit(): void {
-    this.loadDrives();
+    this.route.queryParams.subscribe(params => {
+      if (params['incomplete']) {
+        this.sortBy = 'endKM';
+        this.sortOrder = 'asc';
+      } else {
+        this.sortBy = 'date';
+        this.sortOrder = 'desc';
+        
+      }
+      this.loadDrives();
+    })
   }
 
   addDrive() {

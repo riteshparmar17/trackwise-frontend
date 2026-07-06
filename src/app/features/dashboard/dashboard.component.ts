@@ -42,6 +42,22 @@ export class DashboardComponent {
     return drive.endKM ? 'Completed' : 'Incomplete';
   }
 
+  openDrive(id: string): void {
+    this.router.navigate(['/drives/edit', id]);
+  }
+
+  viewIncompleteDrives(): void {
+    if ((this.data?.stats?.incompleteDrives || 0) === 0) {
+      return;
+    }
+
+    this.router.navigate(['/drives'], {
+      queryParams: {
+        incomplete: true
+      }
+    });
+  }
+
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
