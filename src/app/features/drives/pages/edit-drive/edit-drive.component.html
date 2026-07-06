@@ -14,7 +14,7 @@
       <div class="row text-center">
         <div class="col-4">
           <div class="small text-muted">Date</div>
-          <strong>{{ drive?.date | date: "mediumDate" }}</strong>
+          <strong>{{ drive?.date | date: "mediumDate" : "UTC" }}</strong>
         </div>
 
         <div class="col-4">
@@ -85,8 +85,8 @@
         <label class="form-label fw-semibold"> Purpose </label>
 
         <select class="form-select" formControlName="purpose">
-          <option *ngFor="let item of purposes" [value]="item">
-            {{ item }}
+          <option *ngFor="let purpose of purposes" [value]="purpose">
+            {{ purpose }}
           </option>
         </select>
       </div>

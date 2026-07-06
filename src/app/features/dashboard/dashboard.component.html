@@ -16,7 +16,10 @@
     </div>
   </div>
   <div class="col-6 col-md-3 col-sm-3">
-    <div class="stat-card bg-warning bg-opacity-10 rounded-2 p-2">
+    <div
+      class="stat-card bg-warning bg-opacity-10 rounded-2 p-2 cursor-pointer"
+      (click)="viewIncompleteDrives()"
+    >
       <div class="fs-2 fw-bold text-warning">
         {{ data?.stats?.incompleteDrives }}
       </div>
@@ -53,9 +56,10 @@
   <ul class="list-group list-group-flush">
     <li
       *ngFor="let d of data?.recentDrives"
-      class="list-group-item d-flex justify-content-between"
+      class="list-group-item d-flex justify-content-between cursor-pointer"
+      (click)="openDrive(d._id)"
     >
-      <span>{{ d.date | date: "longDate" }} — {{ d.purpose }}</span>
+      <span>{{ d.date | date: "mediumDate" : "UTC" }} — {{ d.purpose }}</span>
       <span>
         <span
           *ngIf="d.totalKM !== 0; else incompleteBadge"
@@ -84,7 +88,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let e of data?.recentExpenses">
-        <td>{{ e.date | date: "mediumDate" }}</td>
+        <td>{{ e.date | date: "mediumDate" : "UTC" }}</td>
         <td>{{ e.category }}</td>
         <td>{{ e.totalAmount }}</td>
         <td>{{ e.taxAmount }}</td>

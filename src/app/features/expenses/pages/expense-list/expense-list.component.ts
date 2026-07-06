@@ -1,6 +1,5 @@
 import { Component, HostListener } from '@angular/core';
 import { Expense } from '../../models/expense.model';
-import { EXPENSE_CATEGORIES } from '../../constant/expense-categories';
 import { ExpenseService } from '../../services/expense.service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -8,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { dateRangeValidator } from '../../../../shared/validators/date-range.validator';
+import { LookupService } from '../../../settings/services/lookup.service';
 
 @Component({
   selector: 'app-expense-list',
@@ -19,7 +19,7 @@ export class ExpenseListComponent {
   expenses: Expense[] = [];
   loading: boolean = false;
   selectedExpenseId: string = '';
-  categories = EXPENSE_CATEGORIES;
+  categories: string[] = [];
   expenseFilterForm: FormGroup;
   showFilters: boolean = false;
   isMobile: boolean = window.innerWidth < 768;
@@ -37,7 +37,8 @@ export class ExpenseListComponent {
   constructor(
     private expenseService: ExpenseService,
     private toastService: ToastService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private lookupService: LookupService
   ) {
     this.expenseFilterForm = this.fb.group({
       fromDate: [''],
@@ -51,6 +52,7 @@ export class ExpenseListComponent {
 
   ngOnInit(): void {
     this.loadExpenses();
+    this.loadCategories();
   }
 
   loadExpenses(page = 1): void {
@@ -169,6 +171,19 @@ export class ExpenseListComponent {
     return this.sortOrder === 'asc'
       ? '▲'
       : '▼';
+  }
+
+  loadCategories(): void {
+    this.lookupService
+      .getLookupsByType('category')
+      .subscribe({
+        next: (res: any) => {
+          this.categories = res.data.map((item: any) => item.name);
+        },
+        error: (err) => {
+          this.toastService.error(err?.error.message || 'Lookups load failed');
+        }
+      });
   }
 
 }

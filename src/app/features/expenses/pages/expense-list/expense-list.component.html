@@ -152,7 +152,7 @@
 
             <tr *ngFor="let expense of expenses">
               <td>
-                {{ expense.date | date: "mediumDate" }}
+                {{ expense.date | date: "mediumDate" : "UTC" }}
               </td>
 
               <td>

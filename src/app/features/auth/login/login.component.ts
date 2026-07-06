@@ -16,6 +16,7 @@ export class LoginComponent {
 
   error: string = '';
   form: FormGroup;
+  showPassword: boolean = false;
 
   constructor(
     private auth: AuthService,
