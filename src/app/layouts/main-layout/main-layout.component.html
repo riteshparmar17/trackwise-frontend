@@ -2,11 +2,11 @@
   <div class="container">
     <a class="navbar-brand fw-bold" routerLink="/dashboard">🚗 TrackWise</a>
     <button
-      class="navbar-toggler"
+      class="navbar-toggler border-0 shadow-none"
       type="button"
       (click)="isNavbarCollapsed = !isNavbarCollapsed"
     >
-      <span class="navbar-toggler-icon"></span>
+      <span class="text-light">{{ isNavbarCollapsed ? "☰" : "✕" }}</span>
     </button>
 
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse">

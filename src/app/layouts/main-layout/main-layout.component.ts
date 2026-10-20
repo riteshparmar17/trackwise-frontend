@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbCollapseModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { SettingsService } from '../../features/settings/services/settings.service';
+import { filter } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -26,7 +27,13 @@ export class MainLayoutComponent {
     private router: Router,
     private authService: AuthService,
     private settingsService: SettingsService
-  ) { }
+  ) { 
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.isNavbarCollapsed = true;
+      });
+  }
 
   ngOnInit(): void {
     this.loadProfile();

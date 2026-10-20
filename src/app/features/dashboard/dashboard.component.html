@@ -50,33 +50,41 @@
 </div>
 
 <!-- ================= Recent Drives ================= -->
+<div>
+  <div *ngIf="data?.recentDrives?.length; else noDrives" class="card mb-3">
+    <div class="card-header bg-transparent fw-semibold">Recent Drives</div>
+    <ul class="list-group list-group-flush">
+      <li
+        *ngFor="let d of data?.recentDrives"
+        class="list-group-item d-flex justify-content-between cursor-pointer"
+        (click)="openDrive(d._id)"
+      >
+        <span>{{ d.date | date: "mediumDate" : "UTC" }} — {{ d.purpose }}</span>
+        <span>
+          <span
+            *ngIf="d.totalKM !== 0; else incompleteBadge"
+            class="badge bg-primary"
+            >{{ d.totalKM }} km</span
+          >
+          <ng-template #incompleteBadge>
+            <span class="badge bg-warning text-dark">⏳ Incomplete</span>
+          </ng-template>
+        </span>
+      </li>
+    </ul>
+  </div>
 
-<div class="card-header bg-transparent fw-semibold">Recent Drives</div>
-<div *ngIf="data?.recentDrives" class="card mb-3">
-  <ul class="list-group list-group-flush">
-    <li
-      *ngFor="let d of data?.recentDrives"
-      class="list-group-item d-flex justify-content-between cursor-pointer"
-      (click)="openDrive(d._id)"
-    >
-      <span>{{ d.date | date: "mediumDate" : "UTC" }} — {{ d.purpose }}</span>
-      <span>
-        <span
-          *ngIf="d.totalKM !== 0; else incompleteBadge"
-          class="badge bg-primary"
-          >{{ d.totalKM }} km</span
-        >
-        <ng-template #incompleteBadge>
-          <span class="badge bg-warning text-dark">⏳ Incomplete</span>
-        </ng-template>
-      </span>
-    </li>
-  </ul>
+  <ng-template #noDrives>
+    <div class="text-center text-muted py-4">
+      <p class="mb-2">No drives found.</p>
+    </div>
+  </ng-template>
 </div>
 
 <!-- ================= Recent Expenses ================= -->
-<div class="card-header bg-transparent fw-semibold">Recent Expenses</div>
+
 <div class="card mb-3">
+  <div class="card-header bg-transparent fw-semibold">Recent Expenses</div>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -86,7 +94,7 @@
         <th>HST</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody *ngIf="data?.recentExpenses?.length; else noExpenses">
       <tr *ngFor="let e of data?.recentExpenses">
         <td>{{ e.date | date: "mediumDate" : "UTC" }}</td>
         <td>{{ e.category }}</td>
@@ -94,6 +102,15 @@
         <td>{{ e.taxAmount }}</td>
       </tr>
     </tbody>
+    <ng-template #noExpenses>
+      <tbody>
+        <tr>
+          <td colspan="4" class="text-center text-muted py-4">
+            No expenses found.
+          </td>
+        </tr>
+      </tbody>
+    </ng-template>
   </table>
 </div>
 
