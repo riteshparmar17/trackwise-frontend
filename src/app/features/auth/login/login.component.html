@@ -69,7 +69,18 @@
       </div>
       <a routerLink="/forgot-password" class="small">Forgot password?</a>
     </div>
-    <button type="submit" class="btn btn-primary w-100 mb-3">Log In</button>
+    <button
+      type="submit"
+      class="btn btn-primary w-100 mb-3"
+      [disabled]="isSubmitting"
+    >
+      <span
+        *ngIf="isSubmitting"
+        class="spinner-border spinner-border-sm me-2"
+        aria-hidden="true"
+      ></span>
+      {{ isSubmitting ? "Signing in..." : "Login" }}
+    </button>
     <p class="text-center text-muted small">
       No account? <a routerLink="/register">Create one free</a>
     </p>

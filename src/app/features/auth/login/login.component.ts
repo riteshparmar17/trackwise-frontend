@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastService } from '../../../shared/services/toast.service';
 
@@ -17,10 +17,12 @@ export class LoginComponent {
   error: string = '';
   form: FormGroup;
   showPassword: boolean = false;
+  isSubmitting: boolean = false;
 
   constructor(
     private auth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private fb: FormBuilder,
     private toastService: ToastService
   ) {
@@ -28,6 +30,23 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       remember: [false]
+    });
+  }
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe(params => {
+      if (params.get('sessionExpired') === 'true') {
+        this.error = 'Your session has expired. Please log in again.';
+
+        void this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {
+            sessionExpired: null
+          },
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+        });
+      }
     });
   }
 
@@ -40,20 +59,30 @@ export class LoginComponent {
   }
 
   onSubmit() {
+    if (this.isSubmitting) {
+      return;
+    }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
+    this.isSubmitting = true;
+    this.error = '';
     const { email, password } = this.form.value;
     this.auth.login({ email, password }).subscribe({
       next: (res: any) => {
         this.auth.saveToken(res);
+        if (!this.auth.getAccessToken() || !this.auth.getRefreshToken()) {
+          this.error = "Login success, but the authentication tokens could not be saved."
+          this.isSubmitting = false;
+          return;
+        }
         this.toastService.success(`Welcome back, ${res?.data?.user?.name}`);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.error = err?.error?.message || 'Login failed';
+        this.error = err?.error?.message || 'Unable to log in. Please try again.';
+        this.isSubmitting = false;
       }
     });
   }
